@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+.ipynb_checkpoints/
+.env
+README_local.md
+.DS_Store
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+*.log

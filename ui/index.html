@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Landing Page Scoring Prototype (Demo UI)</title>
+  <style>
+    :root { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; }
+    body { margin: 0; background: #f7f7fb; color: #111; }
+    header { padding: 16px 24px; background: #111827; color: #fff; }
+    header h1 { margin: 0; font-size: 18px; }
+    main { padding: 16px; max-width: 1200px; margin: 0 auto; }
+    .card { background: #fff; border-radius: 14px; padding: 16px; box-shadow: 0 6px 24px rgba(0,0,0,0.06); margin-bottom: 16px; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    label { font-weight: 600; display: block; margin-bottom: 6px; }
+    input[type="text"] { width: 100%; padding: 10px; border: 1px solid #e5e7eb; border-radius: 10px; }
+    textarea { width: 100%; min-height: 160px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; padding: 10px; border: 1px solid #e5e7eb; border-radius: 10px; }
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    button { padding: 10px 14px; border-radius: 10px; border: 0; background: #111827; color: #fff; cursor: pointer; }
+    button.secondary { background: #2563eb; }
+    .muted { color: #6b7280; font-size: 12px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+    table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 12px; overflow: hidden; }
+    th, td { border-bottom: 1px solid #f1f5f9; text-align: left; padding: 10px; }
+    th { background: #f8fafc; font-size: 13px; color: #334155; }
+    .pill { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 12px; background: #eef2ff; }
+    .success { background: #ecfdf5; }
+    .warn { background: #fff7ed; }
+    .error { background: #fef2f2; }
+    .result { white-space: pre-wrap; }
+    .footer { margin-top: 24px; font-size: 12px; color: #6b7280; text-align: center; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Landing Page Scoring Prototype (Demo UI)</h1>
+    <div class="muted">Calls your local API at <span class="mono" id="base-url"></span></div>
+  </header>
+
+  <main>
+    <div class="card">
+      <div class="row">
+        <div>
+          <label>API Base URL</label>
+          <input id="apiBase" type="text" value="http://127.0.0.1:8000" />
+          <div class="muted">Change if your API runs on a different port/host.</div>
+        </div>
+        <div>
+          <label>Page URL (optional, for context shown to the model)</label>
+          <input id="pageUrl" type="text" placeholder="https://example.com/landing" />
+        </div>
+      </div>
+      <div style="margin-top:12px;">
+        <label>Criteria</label>
+        <div class="grid-3">
+          <label><input type="checkbox" class="crit" value="clarity" checked /> Clarity</label>
+          <label><input type="checkbox" class="crit" value="credibility" checked /> Credibility</label>
+          <label><input type="checkbox" class="crit" value="cta" checked /> CTA</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Score a Single Page</h3>
+      <div class="row">
+        <div>
+          <label>HTML</label>
+          <textarea id="singleHtml"><html>
+  <head><title>Grow your leads fast</title></head>
+  <body>
+    <h1>Boost your lead generation</h1>
+    <p>Join 1,200+ businesses using our platform.</p>
+    <button>Get started</button>
+    <footer>No testimonials yet.</footer>
+  </body>
+</html></textarea>
+          <div class="actions" style="margin-top:10px;">
+            <button id="btnScore">Score Single Page</button>
+          </div>
+        </div>
+        <div>
+          <label>Result</label>
+          <div id="singleResult" class="result card" style="min-height:160px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Compare Before vs After</h3>
+      <div class="row">
+        <div>
+          <label>Before HTML</label>
+          <textarea id="beforeHtml"><html>
+  <body>
+    <h1>Boost your lead generation</h1>
+    <p>We help teams grow.</p>
+    <button>Learn more</button>
+  </body>
+</html></textarea>
+        </div>
+        <div>
+          <label>After HTML</label>
+          <textarea id="afterHtml"><html>
+  <body>
+    <h1>Boost your lead generation</h1>
+    <p>Join 1,200+ businesses using our platform. 30-day free trial.</p>
+    <button>Start free trial</button>
+    <section><h2>Trusted by</h2><ul><li>ACME</li><li>Globex</li></ul></section>
+  </body>
+</html></textarea>
+        </div>
+      </div>
+      <div class="actions" style="margin-top:10px;">
+        <button class="secondary" id="btnCompare">Compare Versions</button>
+      </div>
+      <div id="compareResult" class="result card" style="min-height:160px;"></div>
+    </div>
+
+    <div class="footer">
+      Tip: If the browser blocks requests due to CORS, enable CORS on the API (see addendum).
+    </div>
+  </main>
+
+  <script>
+    const baseUrlEl = document.getElementById('base-url');
+    const apiBaseEl = document.getElementById('apiBase');
+    const pageUrlEl = document.getElementById('pageUrl');
+    const critEls = () => Array.from(document.querySelectorAll('.crit:checked')).map(el => el.value);
+
+    function setBaseUrlLabel() {
+      baseUrlEl.textContent = apiBaseEl.value;
+    }
+    apiBaseEl.addEventListener('input', setBaseUrlLabel);
+    setBaseUrlLabel();
+
+    function fmtScoreTable(scores, overall, notes) {
+      const rows = Object.keys(scores).map(k => {
+        const s = scores[k]?.score ?? '';
+        const fb = scores[k]?.feedback ?? '';
+        return `<tr><td>${k}</td><td><span class="pill">${s}</span></td><td>${fb}</td></tr>`;
+      }).join('');
+      return `
+        <table>
+          <thead><tr><th>Criterion</th><th>Score</th><th>Feedback</th></tr></thead>
+          <tbody>${rows}</tbody>
+          <tfoot>
+            <tr><th>Overall</th><th colspan="2"><span class="pill">${overall}</span></th></tr>
+            ${notes ? `<tr><th>Notes</th><td colspan="2">${notes}</td></tr>` : ''}
+          </tfoot>
+        </table>
+      `;
+    }
+
+    async function callScore() {
+      const apiBase = apiBaseEl.value.trim();
+      const url = pageUrlEl.value.trim() || null;
+      const html = document.getElementById('singleHtml').value;
+      const criteria = critEls();
+      const out = document.getElementById('singleResult');
+      out.innerHTML = "Scoring…";
+
+      try {
+        const res = await fetch(apiBase + "/score", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ html, url, criteria })
+        });
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        const data = await res.json();
+        out.innerHTML = fmtScoreTable(data.scores, data.overall, data.notes);
+      } catch (err) {
+        out.innerHTML = `<div class="error">Error: ${err.message}. Is the API running? Check CORS.</div>`;
+      }
+    }
+
+    async function callCompare() {
+      const apiBase = apiBaseEl.value.trim();
+      const url = pageUrlEl.value.trim() || null;
+      const before_html = document.getElementById('beforeHtml').value;
+      const after_html = document.getElementById('afterHtml').value;
+      const criteria = critEls();
+      const out = document.getElementById('compareResult');
+      out.innerHTML = "Comparing…";
+
+      function tableSide(title, obj) {
+        return `
+          <div class="card">
+            <h4>${title}</h4>
+            ${fmtScoreTable(obj.scores, obj.overall, obj.notes)}
+          </div>`;
+      }
+
+      try {
+        const res = await fetch(apiBase + "/compare", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ before_html, after_html, url, criteria })
+        });
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        const data = await res.json();
+
+        const deltaRows = Object.keys(data.delta).map(k => {
+          const d = data.delta[k];
+          const badge = d > 0 ? 'success' : (d < 0 ? 'warn' : '');
+          const sign = d > 0 ? '+' : '';
+          return `<tr><td>${k}</td><td><span class="pill ${badge}">${sign}${d}</span></td></tr>`;
+        }).join('');
+
+        out.innerHTML = `
+          <div class="row">
+            ${tableSide("Before", data.before)}
+            ${tableSide("After", data.after)}
+          </div>
+          <div class="card">
+            <h4>Delta</h4>
+            <table>
+              <thead><tr><th>Criterion</th><th>Change</th></tr></thead>
+              <tbody>${deltaRows}</tbody>
+            </table>
+          </div>
+        `;
+      } catch (err) {
+        out.innerHTML = `<div class="error">Error: ${err.message}. Is the API running? Check CORS.</div>`;
+      }
+    }
+
+    document.getElementById('btnScore').addEventListener('click', callScore);
+    document.getElementById('btnCompare').addEventListener('click', callCompare);
+  </script>
+</body>
+</html>
