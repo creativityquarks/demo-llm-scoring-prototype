@@ -158,17 +158,22 @@ Set **API Base URL** in the UI to `http://127.0.0.1:8000` (if different).
 
 ### 1. Mock mode
 
-<img src="docs/assets/1-gui-score-mock.png" alt="scoring" width="400"/>
+Mocking the scoring of a simple LP html sample
+<img src="docs/assets/1-gui-score-mock.jpg" alt="scoring" width="800"/>
 
-<img src="docs/assets/2-gui-compare-mock.png" alt="compare" width="400"/>
+Mocking the comparison of two versions of a simple LP html sample
+<img src="docs/assets/2-gui-compare-mock.jpg" alt="compare" width="800"/>
 
-### 2. API key Mode
+### 2. API key Mode (with OpenAI credit)
 
-<img src="docs/assets/3-gui-score-llm.png" alt="scoring" width="400"/>
+LLM scoring of a simple LP html sample
+<img src="docs/assets/3-gui-score-llm.jpg" alt="scoring" width="800"/>
 
-<img src="docs/assets/4-gui-score-llm-2.png" alt="scoring" width="400"/>
+Second iteration for LLM scoring of a simple LP html sample
+<img src="docs/assets/4-gui-score-llm-2.jpg" alt="scoring" width="800"/>
 
-<img src="docs/assets/5-gui-compare-llm.png" alt="compare" width="400"/>
+LLM comparison of two versions of a simple LP html sample
+<img src="docs/assets/5-gui-compare-llm.jpg" alt="compare" width="800"/>
 
 
 ## Mock mode (no credits required)
