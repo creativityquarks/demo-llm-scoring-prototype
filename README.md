@@ -7,6 +7,7 @@ FastAPI + LLM prototype that **analyzes and scores landing pages** on key CRO cr
 - **Tiny UI**: `ui/index.html` (single file) to call the API
 - **Mock fallback**: works **without OpenAI credits** (`USE_MOCK=1`)
 
+
 ## Repo structure
 ```
 .
@@ -16,7 +17,6 @@ FastAPI + LLM prototype that **analyzes and scores landing pages** on key CRO cr
 ├── Presentation/
 │   ├── Landing_Page_Scoring_Tool_First_Text_Simulation.pdf
 │   ├── MVP_Landing_Page_Scoring_Tool.pdf
-│   └── MVP_Landing_Page_Scoring_Tool.pptx
 ├── docs/
 │   └── CORS_Addendum.md
 ├── notebooks/
@@ -127,12 +127,13 @@ python3 -m http.server 8001 --directory ui
 
 Open the UI (static file) by just **double-clicking** `ui/index.html`, or serve it:
 
-```
+```bash
 python3 -m http.server 8001 --directory ui
 # Then open http://127.0.0.1:8001
-```bash
+```
 
 Set **API Base URL** in the UI to `http://127.0.0.1:8000` (if different).
+
 
 ### Endpoints
 **POST /score**
@@ -153,6 +154,23 @@ Set **API Base URL** in the UI to `http://127.0.0.1:8000` (if different).
 }
 ```
 
+## GUI Demo screenshots
+
+### 1. Mock mode
+
+<img src="docs/assets/1-gui-score-mock.png" alt="scoring" width="400"/>
+
+<img src="docs/assets/2-gui-compare-mock.png" alt="compare" width="400"/>
+
+### 2. API key Mode
+
+<img src="docs/assets/3-gui-score-llm.png" alt="scoring" width="400"/>
+
+<img src="docs/assets/4-gui-score-llm-2.png" alt="scoring" width="400"/>
+
+<img src="docs/assets/5-gui-compare-llm.png" alt="compare" width="400"/>
+
+
 ## Mock mode (no credits required)
 Set `USE_MOCK=1` in `.env` to use a **heuristic** scorer (deterministic). When a valid key is present, the app calls OpenAI and returns JSON results with model feedback.
 
@@ -162,7 +180,6 @@ In Colab, install deps in a cell:
 ```python
 !pip -q install fastapi uvicorn pydantic "openai>=1.0.0" nest_asyncio requests python-dotenv
 ```
-
 ## About the landing page url and fetching its html
 
 1.API Base URL
