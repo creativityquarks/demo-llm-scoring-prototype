@@ -187,23 +187,10 @@ In Colab, install deps in a cell:
 ```
 ## About the landing page url and fetching its html
 
-1.API Base URL
-Where the browser should send requests (the FastAPI server). Local demo: http://127.0.0.1:8000
-Cloud/ngrok: paste that public URL here. This value tells the GUI where to call /score and /compare.
-
-1. Page URL (optional, for context)
 This is the URL of the landing page you’re analyzing. In the current setup it’s context only:
 It is passed through to the API and included in the LLM prompt so the model can “see” the page’s address (brand/domain/locale cues).
 It does not fetch the HTML. The analysis uses the HTML you paste into the textarea(s).
 In mock mode (USE_MOCK=1), the URL is effectively ignored (heuristic uses only the HTML).
-
-1. How to use the Page URL field (today)
-If you’re analyzing a live site, paste the public URL here and paste the page’s HTML into the HTML box.
-If you’re analyzing a staging page / snippet / Figma export, just leave it blank (or put a label URL), and paste the HTML you want scored.
-For before/after comparisons, you can put the same URL (if it’s one page with two versions) or leave it blank—it’s only a label for the model.
-
-1. Common pitfall
-Expecting the tool to crawl the URL automatically. By default, it doesn’t. You must paste the HTML (or add the “auto-fetch” extension below).
 
 ## License
 MIT
